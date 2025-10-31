@@ -5,12 +5,14 @@ Integrated main.py demonstrating combined features of PlayWise backend engine:
 This centralized script serves as an end-to-end example running core functionalities.
 """
 
+import time
 from playlist.playlist import Playlist
 from playlist.song import Song
 from playback_history.playback_controller import PlaybackController
 from song_rating_tree.song_rating_engine import SongRatingEngine
 from song_lookup_map.lookup_map import SongLookupMap
-
+from playlist_sorting.sort_engine import SortCriteria
+from playlist_sorting.sort_engine import SortEngine
 def demonstrate_problem_1():
     """
     Demonstrates Problem 1 features: creating playlist,
@@ -151,6 +153,47 @@ def demonstrate_problem_4():
     result = lookup.lookup_song_by_id(3)
     print("Found." if result else "Song not found.")
 
+def demonstrate_problem_5():
+    print("\n=== Problem 5: Time-based Sorting (Merge Sort) ===")
+    sorter = SortEngine()
+
+    # Create sample songs with added_time attribute (simulate recentness)
+    now = int(time.time())
+    song1 = Song("Imagine", "John Lennon", 183, song_id=1)
+    song1.added_time = now - 300
+    song2 = Song("Bohemian Rhapsody", "Queen", 354, song_id=2)
+    song2.added_time = now - 400
+    song3 = Song("Hey Jude", "The Beatles", 431, song_id=3)
+    song3.added_time = now - 200
+    song4 = Song("All You Need Is Love", "The Beatles", 180, song_id=4)
+    song4.added_time = now - 350
+
+    songs = [song1, song2, song3, song4]
+
+    # Sort alphabetically by Title
+    sorted_by_title = sorter.merge_sort(songs, SortCriteria.ALPHA_TITLE)
+    print("\nSorted by Title (Alphabetical):")
+    for s in sorted_by_title:
+        print(f"- {s.title} by {s.artist}")
+
+    # Sort by Duration Ascending
+    sorted_by_duration_asc = sorter.merge_sort(songs, SortCriteria.DURATION_ASC)
+    print("\nSorted by Duration (Ascending):")
+    for s in sorted_by_duration_asc:
+        print(f"- {s.title} by {s.artist} [{s.duration}s]")
+
+    # Sort by Duration Descending
+    sorted_by_duration_desc = sorter.merge_sort(songs, SortCriteria.DURATION_DESC)
+    print("\nSorted by Duration (Descending):")
+    for s in sorted_by_duration_desc:
+        print(f"- {s.title} by {s.artist} [{s.duration}s]")
+
+    # Sort by Recently Added
+    sorted_by_recent = sorter.merge_sort(songs, SortCriteria.RECENT)
+    print("\nSorted by Recently Added:")
+    for s in sorted_by_recent:
+        print(f"- {s.title} by {s.artist} [Added {now - s.added_time}s ago]")
+
 
 def main():
     """
@@ -160,6 +203,7 @@ def main():
     demonstrate_problem_2()
     demonstrate_problem_3()
     demonstrate_problem_4()
+    demonstrate_problem_5()
 
 if __name__ == "__main__":
     main()
