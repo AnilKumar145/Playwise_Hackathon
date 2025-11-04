@@ -13,6 +13,7 @@ from song_rating_tree.song_rating_engine import SongRatingEngine
 from song_lookup_map.lookup_map import SongLookupMap
 from playlist_sorting.sort_engine import SortCriteria
 from playlist_sorting.sort_engine import SortEngine
+from system_dashboard.dashboard import SystemDashboard
 def demonstrate_problem_1():
     """
     Demonstrates Problem 1 features: creating playlist,
@@ -194,6 +195,42 @@ def demonstrate_problem_5():
     for s in sorted_by_recent:
         print(f"- {s.title} by {s.artist} [Added {now - s.added_time}s ago]")
 
+def demonstrate_problem_7():
+    print("\n=== Problem 7: System Snapshot Dashboard ===")
+    
+    # Set up complete system
+    playlist = Playlist()
+    playback_controller = PlaybackController()
+    rating_engine = SongRatingEngine()
+    lookup_map = SongLookupMap()
+    
+    # Add diverse songs
+    songs_data = [
+        ("Imagine", "John Lennon", 183, 5),
+        ("Bohemian Rhapsody", "Queen", 354, 5),
+        ("Hey Jude", "The Beatles", 431, 4),
+        ("Yesterday", "The Beatles", 125, 4),
+        ("Stairway to Heaven", "Led Zeppelin", 482, 5),
+        ("Hotel California", "Eagles", 391, 4),
+        ("Smells Like Teen Spirit", "Nirvana", 301, 3)
+    ]
+    
+    for title, artist, duration, rating in songs_data:
+        playlist.add_song(title, artist, duration)
+        song = Song(title, artist, duration, song_id=len(playlist.get_all_songs()))
+        rating_engine.insert_song(song, rating)
+        lookup_map.add_song(song)
+        playback_controller.play_song(title, artist, duration)
+    
+    # Create and display dashboard
+    dashboard = SystemDashboard(playlist, playback_controller, rating_engine, lookup_map)
+    dashboard.print_dashboard()
+    
+    # Export snapshot to JSON
+    import json
+    snapshot = dashboard.export_snapshot()
+    print("Snapshot JSON:")
+    print(json.dumps(snapshot, indent=2))
 
 def main():
     """
@@ -204,6 +241,7 @@ def main():
     demonstrate_problem_3()
     demonstrate_problem_4()
     demonstrate_problem_5()
+    demonstrate_problem_7()
 
 if __name__ == "__main__":
     main()
